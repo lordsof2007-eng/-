@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة عمليات السرقة</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/effects.css">
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="btn btn-ghost btn-sm sidebar-toggle" id="sidebarToggle" title="القائمة">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="brand">
+      <div class="brand-mark">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      </div>
+      <div>
+        <h1>لوحة عمليات السرقة</h1>
+        <p>HEIST OPS BOARD</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="stat-pill">المواقع: <b id="statCount">0</b></div>
+
+      <button class="btn btn-ghost btn-sm" id="togglePinsBtn" title="إخفاء أو إظهار المواقع على الخريطة">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span id="togglePinsLabel">إخفاء المواقع</span>
+      </button>
+
+      <button class="role-badge role-viewer" id="roleIndicator" title="اضغط لتسجيل الدخول أو الخروج">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        مشاهد
+      </button>
+
+      <button class="btn btn-ghost btn-sm" id="pwdMgrBtn" style="display:none">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+        الصلاحيات
+      </button>
+      <button class="btn btn-ghost btn-sm" id="loadMapBtn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>
+        خلفية الخريطة
+      </button>
+      <button class="btn btn-ghost btn-sm" id="removeMapBtn" data-visible="false" style="display:none">استرجاع الخريطة الافتراضية</button>
+      <input type="file" id="mapFileInput" accept="image/*" style="display:none">
+      <button class="btn btn-ghost btn-sm" id="exportBtn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        تصدير
+      </button>
+      <button class="btn btn-primary" id="addBtn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        إضافة موقع
+      </button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="search-box">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="searchInput" placeholder="بحث عن موقع...">
+        </div>
+      </div>
+      <div class="filters" id="filters"></div>
+      <div class="divider"></div>
+      <div class="list-header">
+        <span>قائمة المواقع</span>
+        <span id="listCount" class="mono">0</span>
+      </div>
+      <div class="list" id="list"></div>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-sm" style="flex:1" id="clearFiltersBtn">إعادة ضبط الفلاتر</button>
+        <button class="btn btn-danger btn-sm" id="clearAllBtn" style="display:none" title="حذف كل المواقع نهائياً">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+          حذف الكل
+        </button>
+      </div>
+    </aside>
+
+    <main class="map-wrap" id="mapWrap">
+      <div class="map-stage" id="mapStage">
+
+        <div class="map-radar" aria-hidden="true"><span class="radar-beam"></span></div>
+        <div id="zones"></div>
+        <div id="pins"></div>
+      </div>
+
+      <div class="map-hud" aria-hidden="true">
+        <i class="hud-corner tl"></i><i class="hud-corner tr"></i>
+        <i class="hud-corner bl"></i><i class="hud-corner br"></i>
+        <div class="hud-tag mono">LIVE · مزامنة مباشرة</div>
+      </div>
+      <div class="ruler-top mono" id="rulerTop"></div>
+      <div class="map-hint" id="mapHint">اضغط على زر "إضافة موقع" فوق ثم حدد مكانها على الخريطة</div>
+      <div class="map-hint placing-hint" id="placingHint" style="display:none">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+        اضغط على الخريطة لتحديد الموقع — زر الفأرة الأيمن أو Esc للإلغاء
+      </div>
+      <div class="zoom-controls">
+        <button id="zoomInBtn" title="تكبير">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        </button>
+        <div class="zoom-level mono" id="zoomLevel">100%</div>
+        <button id="zoomOutBtn" title="تصغير">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+        </button>
+        <button id="zoomResetBtn" title="إعادة الضبط">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+<div class="place-reticle" id="placeReticle"></div>
+
+<div id="loadingOverlay">
+  <div class="boot">
+    <div class="boot-radar">
+      <div class="radar-sweep"></div>
+      <div class="radar-rings"></div>
+      <svg class="boot-badge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+    </div>
+    <div>
+      <div class="boot-title">لوحة عمليات السرقة</div>
+      <div class="boot-sub mono">LSPD · TACTICAL OPS</div>
+    </div>
+    <div class="boot-bar"><span></span></div>
+    <div class="boot-status mono">جاري تأمين الاتصال وتحميل البيانات…</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/render.js"></script>
+<script src="js/map.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+:root{
+
+  --bg:#0a0e13;
+  --bg-panel:#10161d;
+  --bg-elevated:#1a222b;
+  --bg-elevated-2:#212a34;
+  --border:#232c36;
+  --grid-line:rgba(255,255,255,0.045);
+
+  --amber:#ffb627;
+  --amber-dim:#8a6a23;
+  --red:#ff5a5a;
+
+  --text-1:#e8edf2;
+  --text-2:#8b97a3;
+  --text-3:#5a6570;
+
+  --fleeca:#3ddc84;
+  --jewelry:#c792ea;
+  --store:#ffb627;
+  --house:#5ec8ff;
+  --atm:#ff5a5a;
+  --other:#9aa5b1;
+
+  --radius:10px;
+
+  --font-ui:'Almarai','IBM Plex Sans Arabic','Tajawal',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text-1);
+  font-family:var(--font-ui);
+  direction:rtl;
+  height:100vh;
+  overflow:hidden;
+}
+.mono{font-family:var(--font-mono);}
+
+.icon{
+  width:1em;
+  height:1em;
+  flex-shrink:0;
+  vertical-align:middle;
+  stroke:currentColor;
+  fill:none;
+}
+
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--bg-elevated-2);border-radius:8px;}
+::-webkit-scrollbar-track{background:transparent;}
